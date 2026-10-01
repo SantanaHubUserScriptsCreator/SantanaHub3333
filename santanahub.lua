@@ -1,243 +1,258 @@
--- SANTANA HUB 2026 - Duels (Mobile)
-wait(1)
+-- Santana Hub 2026
+local P=game:GetService("Players")
+local LP=P.LocalPlayer
+local UIS=game:GetService("UserInputService")
+local R=game:GetService("RunService")
+local TS=game:GetService("TweenService")
+local VIM=game:GetService("VirtualInputManager")
+local Cam=workspace.CurrentCamera
+local S={}
 
--- Pantalla de carga 5 segundos
-local g = Instance.new("ScreenGui", game:GetService("CoreGui"))
-g.Name = "SHLoading"
-local f = Instance.new("Frame", g)
-f.Size = UDim2.new(1,0,1,0)
-f.BackgroundColor3 = Color3.fromRGB(0,0,0)
-local t = Instance.new("TextLabel", f)
-t.Size = UDim2.new(1,0,0.5,0)
-t.Position = UDim2.new(0,0,0.25,0)
-t.BackgroundTransparency = 1
-t.Text = "SANTANA HUB 2026\nCargando..."
-t.TextColor3 = Color3.fromRGB(138,43,226)
-t.TextSize = 30
-t.Font = Enum.Font.GothamBold
-
-for i=1,5 do
-    t.Text = "SANTANA HUB 2026\nCargando... "..i.."/5"
-    wait(1)
-end
-
-t.Text = "SANTANA HUB 2026\n¡LISTO!"
-wait(1)
-g:Destroy()
-
--- Servicios
-local P = game:GetService("Players")
-local R = game:GetService("RunService")
-local U = game:GetService("UserInputService")
-local V = game:GetService("VirtualInputManager")
-local LP = P.LocalPlayer
-local Cam = workspace.CurrentCamera
-
--- Variables
-local AutoShoot = false
-local AutoPull = false
-local Aimbot = false
-local ESP = false
-local Speed = false
-local AutoFarm = false
-local Visible = true
+-- Anti-Kick
+pcall(function()
+    local mt=getrawmetatable(game)
+    local old=mt.__namecall
+    setreadonly(mt,false)
+    mt.__namecall=newcclosure(function(self,...)
+        local m=getnamecallmethod()
+        if m=="Kick" or m=="kick" or m=="Teleport" or m=="TeleportToPlaceInstance" then return nil end
+        return old(self,...)
+    end)
+    setreadonly(mt,true)
+end)
+pcall(function() LP.Kick=function() return nil end end)
+pcall(function() LP.Idled:Connect(function() end) end)
 
 -- GUI
-local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
-sg.Name = "SantanaHub2026"
-sg.ResetOnSpawn = false
+local gui=Instance.new("ScreenGui",game:GetService("CoreGui"))
+gui.ResetOnSpawn=false
 
-local mf = Instance.new("Frame", sg)
-mf.Size = UDim2.new(0,220,0,320)
-mf.Position = UDim2.new(0.5,-110,0.5,-160)
-mf.BackgroundColor3 = Color3.fromRGB(15,15,15)
-mf.Active = true
-mf.Draggable = true
-local s = Instance.new("UIStroke", mf)
-s.Color = Color3.fromRGB(138,43,226)
-s.Thickness = 3
-local c = Instance.new("UICorner", mf)
-c.CornerRadius = UDim.new(0,10)
+local main=Instance.new("Frame",gui)
+main.Size=UDim2.new(0,220,0,300)
+main.Position=UDim2.new(0.5,-110,0.5,-150)
+main.BackgroundColor3=Color3.fromRGB(12,12,18)
+main.BorderSizePixel=0
+main.Visible=false
+Instance.new("UICorner",main).CornerRadius=UDim.new(0,10)
+local stroke=Instance.new("UIStroke",main)
+stroke.Color=Color3.fromRGB(130,50,230)
+stroke.Thickness=1.5
 
--- Titulo
-local tb = Instance.new("Frame", mf)
-tb.Size = UDim2.new(1,0,0,30)
-tb.BackgroundColor3 = Color3.fromRGB(138,43,226)
-local tc = Instance.new("UICorner", tb)
-tc.CornerRadius = UDim.new(0,10)
-local tf2 = Instance.new("Frame", tb)
-tf2.Size = UDim2.new(1,0,0,10)
-tf2.Position = UDim2.new(0,0,1,-10)
-tf2.BackgroundColor3 = Color3.fromRGB(138,43,226)
-tf2.BorderSizePixel = 0
+-- Top bar ( x | San Hub )
+local bar=Instance.new("Frame",main)
+bar.Size=UDim2.new(1,0,0,32)
+bar.BackgroundColor3=Color3.fromRGB(18,18,26)
+bar.BorderSizePixel=0
+Instance.new("UICorner",bar).CornerRadius=UDim.new(0,10)
+local barFix=Instance.new("Frame",bar)
+barFix.Size=UDim2.new(1,0,0,8)
+barFix.Position=UDim2.new(0,0,1,-8)
+barFix.BackgroundColor3=Color3.fromRGB(18,18,26)
+barFix.BorderSizePixel=0
 
-local tl = Instance.new("TextLabel", tb)
-tl.Size = UDim2.new(1,-30,1,0)
-tl.Position = UDim2.new(0,8,0,0)
-tl.BackgroundTransparency = 1
-tl.Text = "Santana Hub 2026"
-tl.TextColor3 = Color3.fromRGB(255,255,255)
-tl.TextSize = 14
-tl.Font = Enum.Font.GothamBold
-tl.TextXAlignment = Enum.TextXAlignment.Left
+-- ( x | San Hub )
+local lbl=Instance.new("TextLabel",bar)
+lbl.Size=UDim2.new(1,-10,1,0)
+lbl.Position=UDim2.new(0,8,0,0)
+lbl.BackgroundTransparency=1
+lbl.RichText=true
+lbl.Text='<font color="#aa6aff">(</font> <font color="#ff5555">x</font> <font color="#aa6aff">|</font> San Hub <font color="#aa6aff">)</font>'
+lbl.TextColor3=Color3.fromRGB(220,220,235)
+lbl.TextSize=13
+lbl.Font=Enum.Font.GothamBold
+lbl.TextXAlignment=Enum.TextXAlignment.Left
 
-local xb = Instance.new("TextButton", tb)
-xb.Size = UDim2.new(0,24,0,24)
-xb.Position = UDim2.new(1,-28,0,3)
-xb.BackgroundColor3 = Color3.fromRGB(200,50,50)
-xb.Text = "X"
-xb.TextColor3 = Color3.fromRGB(255,255,255)
-xb.TextSize = 12
-xb.Font = Enum.Font.GothamBold
-local xbc = Instance.new("UICorner", xb)
-xbc.CornerRadius = UDim.new(0,6)
-xb.MouseButton1Click:Connect(function() mf.Visible = false end)
+-- x drag button
+local xb=Instance.new("TextButton",bar)
+xb.Size=UDim2.new(0,18,0,16)
+xb.Position=UDim2.new(0,20,0,8)
+xb.BackgroundTransparency=1
+xb.Text=""
+xb.ZIndex=5
 
--- Scroll
-local sc = Instance.new("ScrollingFrame", mf)
-sc.Size = UDim2.new(1,-16,1,-38)
-sc.Position = UDim2.new(0,8,0,34)
-sc.BackgroundTransparency = 1
-sc.ScrollBarThickness = 3
-sc.ScrollBarImageColor3 = Color3.fromRGB(138,43,226)
-sc.AutomaticCanvasSize = Enum.AutomaticSize.Y
-sc.CanvasSize = UDim2.new(0,0,0,0)
-local ll = Instance.new("UIListLayout", sc)
-ll.Padding = UDim.new(0,5)
-ll.SortOrder = Enum.SortOrder.LayoutOrder
-
--- BOTON FLOTANTE PARA CELULAR
-local ToggleBtn = Instance.new("ImageButton", sg)
-ToggleBtn.Size = UDim2.new(0,50,0,50)
-ToggleBtn.Position = UDim2.new(0,10,0.5,-25)
-ToggleBtn.BackgroundColor3 = Color3.fromRGB(138,43,226)
-ToggleBtn.Image = "rbxassetid://3926305904"
-ToggleBtn.ImageRectOffset = Vector2.new(4, 4)
-ToggleBtn.ImageRectSize = Vector2.new(36, 36)
-ToggleBtn.ImageColor3 = Color3.fromRGB(255,255,255)
-ToggleBtn.Active = true
-ToggleBtn.Draggable = true
-local tbc = Instance.new("UICorner", ToggleBtn)
-tbc.CornerRadius = UDim.new(1,0)
-local tbs = Instance.new("UIStroke", ToggleBtn)
-tbs.Color = Color3.fromRGB(255,255,255)
-tbs.Thickness = 2
-
-ToggleBtn.MouseButton1Click:Connect(function()
-    Visible = not Visible
-    mf.Visible = Visible
+-- Drag
+local dragging,dragStart,startPos=false
+xb.MouseButton1Down:Connect(function()
+    dragging=true
+    dragStart=UIS:GetMouseLocation()
+    startPos=main.Position
+end)
+UIS.InputEnded:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then dragging=false end
+end)
+R.RenderStepped:Connect(function()
+    if dragging then
+        local d=UIS:GetMouseLocation()-dragStart
+        main.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y)
+    end
 end)
 
--- Función botón
-local function Btn(txt, num, cb)
-    local bf = Instance.new("Frame", sc)
-    bf.Size = UDim2.new(1,0,0,30)
-    bf.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    bf.LayoutOrder = num
-    local bfc = Instance.new("UICorner", bf)
-    bfc.CornerRadius = UDim.new(0,8)
-    local bfs = Instance.new("UIStroke", bf)
-    bfs.Color = Color3.fromRGB(50,50,50)
-    bfs.Thickness = 1
-    local b = Instance.new("TextButton", bf)
-    b.Size = UDim2.new(1,0,1,0)
-    b.BackgroundTransparency = 1
-    b.Text = txt..": OFF"
-    b.TextColor3 = Color3.fromRGB(255,255,255)
-    b.TextSize = 12
-    b.Font = Enum.Font.GothamMedium
-    local on = false
-    b.MouseButton1Click:Connect(function()
-        on = not on
+-- Scroll
+local sc=Instance.new("ScrollingFrame",main)
+sc.Size=UDim2.new(1,-10,1,-38)
+sc.Position=UDim2.new(0,5,0,35)
+sc.BackgroundTransparency=1
+sc.ScrollBarThickness=2
+sc.ScrollBarImageColor3=Color3.fromRGB(130,50,230)
+sc.AutomaticCanvasSize=Enum.AutomaticSize.Y
+sc.CanvasSize=UDim2.new(0,0,0,0)
+sc.BorderSizePixel=0
+Instance.new("UIListLayout",sc).Padding=UDim.new(0,3)
+
+-- Section
+local function Sec(txt)
+    local f=Instance.new("TextLabel",sc)
+    f.Size=UDim2.new(1,0,0,20)
+    f.BackgroundTransparency=1
+    f.Text="— "..txt.." —"
+    f.TextColor3=Color3.fromRGB(130,50,230)
+    f.TextSize=10
+    f.Font=Enum.Font.GothamBlack
+end
+
+-- Toggle button
+local function Btn(name,cb)
+    local f=Instance.new("Frame",sc)
+    f.Size=UDim2.new(1,0,0,30)
+    f.BackgroundColor3=Color3.fromRGB(20,20,30)
+    f.BorderSizePixel=0
+    Instance.new("UICorner",f).CornerRadius=UDim.new(0,6)
+
+    local nl=Instance.new("TextLabel",f)
+    nl.Size=UDim2.new(1,-50,1,0)
+    nl.Position=UDim2.new(0,10,0,0)
+    nl.BackgroundTransparency=1
+    nl.Text=name
+    nl.TextColor3=Color3.fromRGB(200,200,215)
+    nl.TextSize=11
+    nl.Font=Enum.Font.Gotham
+    nl.TextXAlignment=Enum.TextXAlignment.Left
+
+    local tb=Instance.new("Frame",f)
+    tb.Size=UDim2.new(0,30,0,14)
+    tb.Position=UDim2.new(1,-40,0.5,-7)
+    tb.BackgroundColor3=Color3.fromRGB(35,35,50)
+    Instance.new("UICorner",tb).CornerRadius=UDim.new(1,0)
+
+    local tc=Instance.new("Frame",tb)
+    tc.Size=UDim2.new(0,10,0,10)
+    tc.Position=UDim2.new(0,2,0,2)
+    tc.BackgroundColor3=Color3.fromRGB(100,100,120)
+    Instance.new("UICorner",tc).CornerRadius=UDim.new(1,0)
+
+    local btn=Instance.new("TextButton",f)
+    btn.Size=UDim2.new(1,0,1,0)
+    btn.BackgroundTransparency=1
+    btn.Text=""
+
+    local on=false
+    btn.MouseButton1Click:Connect(function()
+        on=not on
         if on then
-            bf.BackgroundColor3 = Color3.fromRGB(100,50,200)
-            bfs.Color = Color3.fromRGB(170,80,255)
-            b.Text = txt..": ON"
+            TS:Create(tb,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(130,50,230)}):Play()
+            TS:Create(tc,TweenInfo.new(0.2),{Position=UDim2.new(1,-12,0,2),BackgroundColor3=Color3.fromRGB(255,255,255)}):Play()
+            TS:Create(f,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(30,15,55)}):Play()
         else
-            bf.BackgroundColor3 = Color3.fromRGB(40,40,40)
-            bfs.Color = Color3.fromRGB(50,50,50)
-            b.Text = txt..": OFF"
+            TS:Create(tb,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(35,35,50)}):Play()
+            TS:Create(tc,TweenInfo.new(0.2),{Position=UDim2.new(0,2,0,2),BackgroundColor3=Color3.fromRGB(100,100,120)}):Play()
+            TS:Create(f,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(20,20,30)}):Play()
         end
         cb(on)
     end)
 end
 
--- Botones
-Btn("Auto Shoot",1,function(v) AutoShoot=v end)
-Btn("Auto Pull Gun",2,function(v) AutoPull=v end)
-Btn("Aimbot",3,function(v) Aimbot=v end)
-Btn("ESP Players",4,function(v) ESP=v if not v then for _,p in pairs(P:GetPlayers()) do if p~=LP and p.Character then local h=p.Character:FindFirstChild("SESP") if h then h:Destroy() end end end end end)
-Btn("Speed x2",5,function(v) Speed=v pcall(function() if LP.Character and LP.Character:FindFirstChild("Humanoid") then LP.Character.Humanoid.WalkSpeed = v and 32 or 16 end end) end)
-Btn("Auto Farm",6,function(v) AutoFarm=v end)
+-- FEATURES
+Sec("Combat")
+Btn("Auto Shoot",function(v) S.Shoot=v end)
+Btn("Aimbot",function(v) S.Aim=v end)
+Btn("Auto Pull Gun",function(v) S.Pull=v end)
+
+Sec("Visual")
+Btn("ESP Players",function(v) S.ESP=v if not v then for _,p in pairs(P:GetPlayers()) do if p~=LP and p.Character then local h=p.Character:FindFirstChild("SH_H") if h then h:Destroy() end end end end end)
+Btn("ESP Names",function(v) S.Names=v if not v then for _,p in pairs(P:GetPlayers()) do if p~=LP and p.Character then local b=p.Character:FindFirstChild("SH_N") if b then b:Destroy() end end end end end)
+
+Sec("Movement")
+Btn("Speed x2",function(v) S.Sp2=v pcall(function() LP.Character.Humanoid.WalkSpeed=v and 32 or 16 end) end)
+Btn("Speed x3",function(v) S.Sp3=v pcall(function() LP.Character.Humanoid.WalkSpeed=v and 48 or 16 end) end)
+Btn("Infinite Jump",function(v) S.IJ=v end)
+
+Sec("Misc")
+Btn("Auto Farm",function(v) S.Farm=v end)
+
+-- Footer
+local ft=Instance.new("TextLabel",sc)
+ft.Size=UDim2.new(1,0,0,20)
+ft.BackgroundTransparency=1
+ft.Text="San Hub Premium v2026"
+ft.TextColor3=Color3.fromRGB(50,50,70)
+ft.TextSize=8
+ft.Font=Enum.Font.Gotham
+
+-- Float button (SH)
+local fb=Instance.new("ImageButton",gui)
+fb.Size=UDim2.new(0,40,0,40)
+fb.Position=UDim2.new(0,10,0.5,-20)
+fb.BackgroundColor3=Color3.fromRGB(12,12,18)
+fb.AutoButtonColor=false
+fb.BorderSizePixel=0
+fb.Draggable=true
+Instance.new("UICorner",fb).CornerRadius=UDim.new(1,0)
+Instance.new("UIStroke",fb).Color=Color3.fromRGB(130,50,230)
+local ft2=Instance.new("TextLabel",fb)
+ft2.Size=UDim2.new(1,0,1,0)
+ft2.BackgroundTransparency=1
+ft2.Text="SH"
+ft2.TextColor3=Color3.fromRGB(255,255,255)
+ft2.TextSize=12
+ft2.Font=Enum.Font.GothamBlack
+
+local pv=false
+fb.MouseButton1Click:Connect(function()
+    pv=not pv
+    if pv then
+        main.Visible=true
+        main.Size=UDim2.new(0,0,0,0)
+        TS:Create(main,TweenInfo.new(0.3,Enum.EasingStyle.Back),{Size=UDim2.new(0,220,0,300),Position=UDim2.new(0.5,-110,0.5,-150)}):Play()
+    else
+        TS:Create(main,TweenInfo.new(0.2),{Size=UDim2.new(0,0,0,0),Position=UDim2.new(0.5,0,0.5,0)}):Play()
+        wait(0.25)
+        if not pv then main.Visible=false end
+    end
+end)
+
+-- Inf Jump
+UIS.JumpRequest:Connect(function()
+    if S.IJ then pcall(function() LP.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end) end
+end)
 
 -- Aimbot
-local function GetClose()
-    local cl,sn=nil,math.huge
+local function GC()
+    local c,d=nil,math.huge
     for _,p in pairs(P:GetPlayers()) do
         if p~=LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             local h=p.Character:FindFirstChildOfClass("Humanoid")
             if h and h.Health>0 then
                 local pos=Cam:WorldToViewportPoint(p.Character.HumanoidRootPart.Position)
-                local d=(Vector2.new(pos.X,pos.Y)-Vector2.new(LP:GetMouse().X,LP:GetMouse().Y)).Magnitude
-                if d<sn and d<300 then sn=d cl=p end
+                local dist=(Vector2.new(pos.X,pos.Y)-Vector2.new(LP:GetMouse().X,LP:GetMouse().Y)).Magnitude
+                if dist<d and dist<280 then d=dist c=p end
             end
         end
     end
-    return cl
+    return c
 end
 
--- ESP
-local function MakeESP(p)
-    if p~=LP and p.Character and not p.Character:FindFirstChild("SESP") then
-        local hl=Instance.new("Highlight")
-        hl.Name="SESP"
-        hl.FillColor=Color3.fromRGB(138,43,226)
-        hl.OutlineColor=Color3.fromRGB(255,255,255)
-        hl.FillTransparency=0.5
-        hl.Parent=p.Character
-    end
-end
-
--- Loop
+-- Main loop
 R.RenderStepped:Connect(function()
     pcall(function()
-        if Aimbot then
-            local t2=GetClose()
-            if t2 and t2.Character and t2.Character:FindFirstChild("HumanoidRootPart") then
-                Cam.CFrame=CFrame.new(Cam.CFrame.Position,t2.Character.HumanoidRootPart.Position)
-            end
-        end
-        if AutoShoot then
-            V:SendMouseButtonEvent(0,0,0,true,game,1)
-            task.wait(0.05)
-            V:SendMouseButtonEvent(0,0,0,false,game,1)
-        end
-        if AutoPull and LP.Character then
-            local tool=LP.Character:FindFirstChildWhichIsA("Tool")
-            if not tool then
-                for _,item in pairs(LP.Backpack:GetChildren()) do
-                    if item:IsA("Tool") then LP.Character.Humanoid:EquipTool(item) break end
-                end
-            end
-        end
-        if ESP then
-            for _,p in pairs(P:GetPlayers()) do MakeESP(p) end
-        end
-        if Speed and LP.Character and LP.Character:FindFirstChild("Humanoid") then
-            LP.Character.Humanoid.WalkSpeed=32
-        end
-        if AutoFarm then
-            for _,o in pairs(workspace:GetDescendants()) do
-                if o:IsA("BasePart") and (o.Name:lower():find("coin") or o.Name:lower():find("gem") or o.Name:lower():find("event") or o.Name:lower():find("collect")) then
-                    if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
-                        LP.Character.HumanoidRootPart.CFrame=o.CFrame
-                        task.wait(0.3)
-                    end
-                    break
-                end
-            end
-        end
+        if S.Aim then local t=GC() if t then Cam.CFrame=CFrame.new(Cam.CFrame.Position,t.Character.HumanoidRootPart.Position) end end
+        if S.Shoot then VIM:SendMouseButtonEvent(0,0,0,true,game,1) task.wait(0.05) VIM:SendMouseButtonEvent(0,0,0,false,game,1) end
+        if S.Pull and LP.Character and not LP.Character:FindFirstChildWhichIsA("Tool") then for _,i in pairs(LP.Backpack:GetChildren()) do if i:IsA("Tool") then LP.Character.Humanoid:EquipTool(i) break end end end
+        if S.ESP then for _,p in pairs(P:GetPlayers()) do if p~=LP and p.Character and not p.Character:FindFirstChild("SH_H") then local hl=Instance.new("Highlight") hl.Name="SH_H" hl.FillColor=Color3.fromRGB(130,50,230) hl.OutlineColor=Color3.new(1,1,1) hl.FillTransparency=0.6 hl.Parent=p.Character end end end
+        if S.Names then for _,p in pairs(P:GetPlayers()) do if p~=LP and p.Character and p.Character:FindFirstChild("Head") and not p.Character:FindFirstChild("SH_N") then local b=Instance.new("BillboardGui") b.Name="SH_N" b.Size=UDim2.new(0,100,0,18) b.StudsOffset=Vector3.new(0,2.5,0) b.AlwaysOnTop=true b.Parent=p.Character.Head local l=Instance.new("TextLabel",b) l.Size=UDim2.new(1,0,1,0) l.BackgroundTransparency=1 l.Text=p.Name l.TextColor3=Color3.new(1,1,1) l.TextStrokeColor3=Color3.fromRGB(130,50,230) l.TextStrokeTransparency=0.3 l.TextSize=11 l.Font=Enum.Font.GothamBold end end end
+        if S.Sp2 and LP.Character and LP.Character:FindFirstChild("Humanoid") then LP.Character.Humanoid.WalkSpeed=32 end
+        if S.Sp3 and LP.Character and LP.Character:FindFirstChild("Humanoid") then LP.Character.Humanoid.WalkSpeed=48 end
+        if S.Farm then for _,o in pairs(workspace:GetDescendants()) do if o:IsA("BasePart") and (o.Name:lower():find("coin") or o.Name:lower():find("gem") or o.Name:lower():find("event")) then if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then LP.Character.HumanoidRootPart.CFrame=o.CFrame task.wait(0.3) end break end end end
     end)
 end)
 
-print("Santana Hub 2026 cargado!")
+print("San Hub ✓ | Anti-Kick ✓ | SH to open")
